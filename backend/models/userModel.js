@@ -13,6 +13,12 @@ const userSchema = new mongoose.Schema(
     mobileNumber: {
       type: String,
       required: true,
+      unique: true,
+    },
+    isVerified: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
   },
   { timestamps: true }
