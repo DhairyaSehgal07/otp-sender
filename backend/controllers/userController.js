@@ -118,6 +118,40 @@ const getSingleUser = async (req, res) => {
   }
 };
 
+//@desc deletes a single user
+//@route DELETE /api/users/:id
+//@access PUBLIC
+const deleteUser = async (req, res) => {
+  try {
+    // Extract user ID from the request parameters
+    const userId = req.params.id;
+
+    // Find the user by their ID and delete them
+    const user = await User.findByIdAndDelete(userId);
+
+    // If user is not found, send a 404 response
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // If user is deleted successfully, send a success response
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (err) {
+    // Handle errors (like invalid ID format)
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete user",
+      error: err.message, // For debugging purposes
+    });
+  }
+};
+
 // MOBILE OTP LOGIC
 
 async function sendOtp(mobileNumber, otp, userId) {
@@ -151,8 +185,7 @@ async function sendOtp(mobileNumber, otp, userId) {
 // mobile otp handler
 const mobileOtpHandler = async (req, res) => {
   try {
-    const { mobileNumber } = req.body;
-    const otp = generateOtp();
+    const { mobileNumber, otp } = req.body;
     const { id } = req.params;
 
     // generate otp and store it in the user verification model in db
@@ -181,7 +214,7 @@ const mobileOtpHandler = async (req, res) => {
 
 const resendMobileOtpHandler = async (req, res) => {
   try {
-    const { mobileNumber } = req.body;
+    const { mobileNumber, otp } = req.body;
     const user = await UserVerification.findOne({ mobileNumber });
 
     const deleteCurrentUserVerification = await user.deleteOne();
@@ -252,4 +285,5 @@ export {
   mobileOtpHandler,
   resendMobileOtpHandler,
   verifyUserMobile,
+  deleteUser,
 };

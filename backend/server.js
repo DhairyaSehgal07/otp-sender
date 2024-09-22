@@ -1,14 +1,23 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors"; // Import cors
 import userRoutes from "./routes/userRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import connectDb from "./utils/db.js";
+
 dotenv.config();
 connectDb();
 
 const app = express();
 
 const PORT = process.env.PORT || 5000;
+
+// Use CORS middleware
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Allow requests from this origin
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
